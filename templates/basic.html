@@ -4,11 +4,9 @@
   <!-- Style -->
   <link rel="stylesheet" href="/static/css/nv.d3.css" type="text/css">
   <style>
-
   body {
     overflow-y:scroll;
   }
-
   text {
     font: 12px sans-serif;
   }
@@ -41,7 +39,7 @@
   <!-- jQuery -->
   <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <!-- Data -->
-  <script src="/static/js/test-data.js" charset="utf-8"></script>
+  <script src="/static/js/require.js" charset="utf-8"></script>
   <!-- Line Graph, nvd3-->
   <script src="/static/js/line-graph.js" charset="utf-8"></script>
   <script src="/static/js/dataParser.js" charset="utf-8"></script>
@@ -65,7 +63,10 @@
   <script src="/static/js/MIDIJS/Plugin.js"></script>
   <script src="/static/js/MIDIJS/Base64.js"></script>
   <script src="/static/js/MIDIJS/base64binary.js"></script>
-
+  
+  <!-- Chart Creation  -->
+  <script src="/static/js/chartCreator.js"></script>
+  
   <script>
     /*
     Creating a global notes object to be accessed and updated independently by Vexflow and audiosynth.js
@@ -96,83 +97,41 @@
         "duration_audio":2
       },
     ];
-    // Wrapping in nv.addGraph allows for '0 timeout render', stores rendered charts in nv.graphs, and may do more in the future... it's NOT required
-    var chart;
-    nv.addGraph(function() {
-      chart = nv.models.lineChart()
-      .options({
-        margin: {left: 100, bottom: 100},
-        x: function(d,i) { return i},
-        showXAxis: true,
-        showYAxis: true,
-        transitionDuration: 250
-      })
-      ;
-
-      // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
-      chart.xAxis
-        .axisLabel("Time (s)")
-        .tickFormat(d3.format(',.2f'));
-
-      chart.yAxis
-        .axisLabel('Price')
-        .tickFormat(d3.format(',.2f'))
-        ;
-
-      d3.select('#chart1 svg')
-        .datum(getChartValues())
-        .call(chart);
-
-      //TODO: Figure out a good way to do this automatically
-      nv.utils.windowResize(chart.update);
-      //nv.utils.windowResize(function() { d3.select('#chart1 svg').call(chart) });
-      chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
-
-      return chart;
-    });
-    function getChartValues() {
-      var p1 = [];
-      var parser = new dataParser(testdata);
-      var results = parser.getValuesFor('High');
-      console.log(results);
-
-      for (var i = 0; i < results.length; i++) {
-        p1.push({x: results[i][0], y: results[i][1] }); //the nulls are to show how defined works
-      }
-
-      return [
-        {
-          values: p1,
-          key: "COCO Stock High",
-          color: "#ff7f0e"
-        }
-      ];
-    }
-    //Adding the click listener for music playback
-    $(document).ready(function(){
-      $(".tempButton").click(function(){
-        playNotes();
-      });
-    });
-
     //adding the midi player onload
     $(window).load(function(){
       MIDI.loadPlugin({
         soundfontUrl: "/static/js/MIDIJS/soundfont/",
         instruments: [ "acoustic_grand_piano"],
         callback: function() {
-          var delay = 0; // play one note every quarter second
-          var note = 50; // the MIDI note
-          var velocity = 127; // how hard the note hits
-          // play the note
-          // MIDI.setVolume(0, 127);
-          MIDI.noteOn(0, 100, 127, 0);
-          // MIDI.noteOff(0, note, delay + 0.75);
+          playNotes(); 
         }
       });
+      $.ajax({
+        url:'/query',
+        data:{ticker:'EBAY',start_date:'2013-11-25',end_date:'2014-5-31'},
+        success:function(data){
+          console.log(data)
+          chartCreator(data,nv);
+        },
+        dataType:'json'
+      });
     });
-    function playNotes(){
 
+    /*
+    Function to play files from external MIDI file  
+    */
+    function playNotes(){
+      MIDI.programChange(0, 0);
+      MIDI.programChange(1, 118);
+      for (var n = 0; n < 100; n ++) {
+        var delay = n / 4; // play one note every quarter second
+        var note = MIDI.pianoKeyOffset + n; // the MIDI note
+        var velocity = 127; // how hard the note hits
+        // play the note
+        MIDI.noteOn(0, note, velocity, delay);
+        // play the some note 3-steps up
+        MIDI.noteOn(1, note + 3, velocity, delay);
+      }
     }
   </script>
 </head>
@@ -198,14 +157,11 @@
   var vexNotes = [
     // A quarter-note C.
     new Vex.Flow.StaveNote({ keys: ["C/4"], duration: "q" }),
-
     // A quarter-note D.
     new Vex.Flow.StaveNote({ keys: ["D/4"], duration: "q" }),
-
     // A quarter-note rest. Note that the key (b/4) specifies the vertical
     // position of the rest.
     new Vex.Flow.StaveNote({ keys: ["B/4"], duration: "qr" }),
-
     // A C-Major chord.
     new Vex.Flow.StaveNote({ keys: [ "E/4", "g/4"], duration: "q" })
   ];
