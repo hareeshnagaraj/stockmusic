@@ -30,6 +30,11 @@
     margin-top: 0px;
     margin-left: 10px;
   }
+  .tempButton{
+    width:100px;
+    height:50px;
+    background-color: red;
+  }
   </style>
   <!-- D3 Charts include -->
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
@@ -50,8 +55,47 @@
   <script src="/static/js/nvd3/models/line.js"></script>
   <script src="/static/js/nvd3/models/lineChart.js"></script>
   <!-- Vexflow, Music notation library -->
-  <script src="/static/js/vexflow.min.js"></script>
+  <script src="/static/js/vexflow/vexflow.min.js"></script>
+  <!-- MIDI JS -->
+  <script src="/static/js/MIDIJS/AudioDetect.js"></script>
+  <script src="/static/js/MIDIJS/DOMLoader.script.js"></script>
+  <script src="/static/js/MIDIJS/DOMLoader.XMLHttp.js"></script>
+  <script src="/static/js/MIDIJS/LoadPlugin.js"></script>
+  <script src="/static/js/MIDIJS/Player.js"></script>
+  <script src="/static/js/MIDIJS/Plugin.js"></script>
+  <script src="/static/js/MIDIJS/Base64.js"></script>
+  <script src="/static/js/MIDIJS/base64binary.js"></script>
+
   <script>
+    /*
+    Creating a global notes object to be accessed and updated independently by Vexflow and audiosynth.js
+    */
+    var notes = [
+      {
+        "note":"C",
+        "octave":4,
+        "duration_vex":"q",
+        "duration_audio":2
+      },
+      {
+        "note":"D",
+        "octave":4,
+        "duration_vex":"q",
+        "duration_audio":2
+      },
+      {
+        "note":"E",
+        "octave":4,
+        "duration_vex":"q",
+        "duration_audio":2
+      },
+      {
+        "note":"B",
+        "octave":4,
+        "duration_vex":"qr",
+        "duration_audio":2
+      },
+    ];
     // Wrapping in nv.addGraph allows for '0 timeout render', stores rendered charts in nv.graphs, and may do more in the future... it's NOT required
     var chart;
     nv.addGraph(function() {
@@ -104,6 +148,32 @@
         }
       ];
     }
+    //Adding the click listener for music playback
+    $(document).ready(function(){
+      $(".tempButton").click(function(){
+        playNotes();
+      });
+    });
+
+    //adding the midi player onload
+    $(window).load(function(){
+      MIDI.loadPlugin({
+        soundfontUrl: "/static/js/MIDIJS/soundfont/",
+        instruments: [ "acoustic_grand_piano"],
+        callback: function() {
+          var delay = 0; // play one note every quarter second
+          var note = 50; // the MIDI note
+          var velocity = 127; // how hard the note hits
+          // play the note
+          // MIDI.setVolume(0, 127);
+          MIDI.noteOn(0, 100, 127, 0);
+          // MIDI.noteOff(0, note, delay + 0.75);
+        }
+      });
+    });
+    function playNotes(){
+
+    }
   </script>
 </head>
 <body >
@@ -118,7 +188,6 @@
 </div>
 <script> //vexflow script for display of musical stuff
   var canvas = $(".one .a canvas")[0];
-  console.log(canvas)
   var renderer = new Vex.Flow.Renderer(canvas,
     Vex.Flow.Renderer.Backends.CANVAS);
 
@@ -126,19 +195,19 @@
   var stave = new Vex.Flow.Stave(10, 0, 500);
   stave.addClef("treble").setContext(ctx).draw();
   // Create the notes
-  var notes = [
+  var vexNotes = [
     // A quarter-note C.
-    new Vex.Flow.StaveNote({ keys: ["c/4"], duration: "q" }),
+    new Vex.Flow.StaveNote({ keys: ["C/4"], duration: "q" }),
 
     // A quarter-note D.
-    new Vex.Flow.StaveNote({ keys: ["d/4"], duration: "q" }),
+    new Vex.Flow.StaveNote({ keys: ["D/4"], duration: "q" }),
 
     // A quarter-note rest. Note that the key (b/4) specifies the vertical
     // position of the rest.
-    new Vex.Flow.StaveNote({ keys: ["b/4"], duration: "qr" }),
+    new Vex.Flow.StaveNote({ keys: ["B/4"], duration: "qr" }),
 
     // A C-Major chord.
-    new Vex.Flow.StaveNote({ keys: [ "e/4", "g/4"], duration: "q" })
+    new Vex.Flow.StaveNote({ keys: [ "E/4", "g/4"], duration: "q" })
   ];
   // Create a voice in 4/4
   var voice = new Vex.Flow.Voice({
@@ -148,7 +217,7 @@
   });
 
   // Add notes to voice
-  voice.addTickables(notes);
+  voice.addTickables(vexNotes);
 
   // Format and justify the notes to 500 pixels
   var formatter = new Vex.Flow.Formatter().
@@ -157,5 +226,6 @@
   // Render voice
   voice.draw(ctx, stave);
 </script>
+<div class="tempButton"></div>
 </body>
 </html>
