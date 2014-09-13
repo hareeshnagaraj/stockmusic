@@ -8,8 +8,18 @@
   <script src="/static/js/test-data.js" charset="utf-8"></script>
   <!-- Line Graph -->
   <script src="/static/js/line-graph.js" charset="utf-8"></script>
+  <!-- Data Parser Object -->
+  <script src="/static/js/dataParser.js" charset="utf-8"></script>
+
   <!-- Style -->
   <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+  <script>
+  $(document).ready(function(){
+    console.log(testdata);
+    var parser = new dataParser(testdata);
+    parser.getValuesFor("High");
+  });
+  </script>
 </head>
 <body>
   <p>hi</p>
