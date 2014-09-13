@@ -12,11 +12,9 @@
   text {
     font: 12px sans-serif;
   }
-
   svg {
     display: block;
   }
-
   #chart1 svg {
     height: 500px;
     min-width: 200px;
@@ -27,7 +25,6 @@
     For example width should be =< margin.left + margin.right + 1,
     of course 1 pixel for the entire chart would not be very useful, BUT should not have errors
   */
-
   }
   #chart1 {
     margin-top: 0px;
@@ -40,82 +37,125 @@
   <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <!-- Data -->
   <script src="/static/js/test-data.js" charset="utf-8"></script>
-  <!-- Line Graph -->
+  <!-- Line Graph, nvd3-->
   <script src="/static/js/line-graph.js" charset="utf-8"></script>
-<script src="/static/js/dataParser.js" charset="utf-8"></script>
-<script src="/static/js/nvd3/nv.d3.js" charset="utf-8"></script>
-<script src="/static/js/nvd3/tooltip.js"></script>
-<script src="/static/js/nvd3/utils.js"></script>
-<script src="/static/js/nvd3/interactiveLayer.js"></script>
-<script src="/static/js/nvd3/models/legend.js"></script>
-<script src="/static/js/nvd3/models/axis.js"></script>
-<script src="/static/js/nvd3/models/scatter.js"></script>
-<script src="/static/js/nvd3/models/line.js"></script>
-<script src="/static/js/nvd3/models/lineChart.js"></script>
+  <script src="/static/js/dataParser.js" charset="utf-8"></script>
+  <script src="/static/js/nvd3/nv.d3.js" charset="utf-8"></script>
+  <script src="/static/js/nvd3/tooltip.js"></script>
+  <script src="/static/js/nvd3/utils.js"></script>
+  <script src="/static/js/nvd3/interactiveLayer.js"></script>
+  <script src="/static/js/nvd3/models/legend.js"></script>
+  <script src="/static/js/nvd3/models/axis.js"></script>
+  <script src="/static/js/nvd3/models/scatter.js"></script>
+  <script src="/static/js/nvd3/models/line.js"></script>
+  <script src="/static/js/nvd3/models/lineChart.js"></script>
+  <!-- Vexflow, Music notation library -->
+  <script src="/static/js/vexflow.min.js"></script>
+  <script>
+    // Wrapping in nv.addGraph allows for '0 timeout render', stores rendered charts in nv.graphs, and may do more in the future... it's NOT required
+    var chart;
+    nv.addGraph(function() {
+      chart = nv.models.lineChart()
+      .options({
+        margin: {left: 100, bottom: 100},
+        x: function(d,i) { return i},
+        showXAxis: true,
+        showYAxis: true,
+        transitionDuration: 250
+      })
+      ;
 
+      // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
+      chart.xAxis
+        .axisLabel("Time (s)")
+        .tickFormat(d3.format(',.2f'));
 
-<script>
-// Wrapping in nv.addGraph allows for '0 timeout render', stores rendered charts in nv.graphs, and may do more in the future... it's NOT required
-var chart;
+      chart.yAxis
+        .axisLabel('Price')
+        .tickFormat(d3.format(',.2f'))
+        ;
 
-nv.addGraph(function() {
-  chart = nv.models.lineChart()
-  .options({
-    margin: {left: 100, bottom: 100},
-    x: function(d,i) { return i},
-    showXAxis: true,
-    showYAxis: true,
-    transitionDuration: 250
-  })
-  ;
+      d3.select('#chart1 svg')
+        .datum(getChartValues())
+        .call(chart);
 
-  // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
-  chart.xAxis
-    .axisLabel("Time (s)")
-    .tickFormat(d3.format(',.2f'));
+      //TODO: Figure out a good way to do this automatically
+      nv.utils.windowResize(chart.update);
+      //nv.utils.windowResize(function() { d3.select('#chart1 svg').call(chart) });
+      chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
-  chart.yAxis
-    .axisLabel('Price')
-    .tickFormat(d3.format(',.2f'))
-    ;
+      return chart;
+    });
+    function getChartValues() {
+      var p1 = [];
+      var parser = new dataParser(testdata);
+      var results = parser.getValuesFor('High');
+      console.log(results);
 
-  d3.select('#chart1 svg')
-    .datum(getChartValues())
-    .call(chart);
+      for (var i = 0; i < results.length; i++) {
+        p1.push({x: results[i][0], y: results[i][1] }); //the nulls are to show how defined works
+      }
 
-  //TODO: Figure out a good way to do this automatically
-  nv.utils.windowResize(chart.update);
-  //nv.utils.windowResize(function() { d3.select('#chart1 svg').call(chart) });
-  chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
-
-  return chart;
-});
-
-function getChartValues() {
-  var p1 = [];
-  var parser = new dataParser(testdata);
-  var results = parser.getValuesFor('High');
-  console.log(results)
-
-  for (var i = 0; i < results.length; i++) {
-    p1.push({x: results[i][0], y: results[i][1] }); //the nulls are to show how defined works
-  }
-
-  return [
-    {
-      values: p1,
-      key: "COCO Stock High",
-      color: "#ff7f0e"
+      return [
+        {
+          values: p1,
+          key: "COCO Stock High",
+          color: "#ff7f0e"
+        }
+      ];
     }
-  ];
-}
-
-</script>
+  </script>
 </head>
 <body >
   <!-- Data Parser Object -->
 <div id="chart1" >
-<svg style="height: 500px;"></svg>
+  <svg style="height: 500px;"></svg>
 </div>
+<div class="one">
+  <div class="a">
+    <canvas id="canvas" width="700" height="100"></canvas>
+  </div>
+</div>
+<script> //vexflow script for display of musical stuff
+  var canvas = $(".one .a canvas")[0];
+  console.log(canvas)
+  var renderer = new Vex.Flow.Renderer(canvas,
+    Vex.Flow.Renderer.Backends.CANVAS);
+
+  var ctx = renderer.getContext();
+  var stave = new Vex.Flow.Stave(10, 0, 500);
+  stave.addClef("treble").setContext(ctx).draw();
+  // Create the notes
+  var notes = [
+    // A quarter-note C.
+    new Vex.Flow.StaveNote({ keys: ["c/4"], duration: "q" }),
+
+    // A quarter-note D.
+    new Vex.Flow.StaveNote({ keys: ["d/4"], duration: "q" }),
+
+    // A quarter-note rest. Note that the key (b/4) specifies the vertical
+    // position of the rest.
+    new Vex.Flow.StaveNote({ keys: ["b/4"], duration: "qr" }),
+
+    // A C-Major chord.
+    new Vex.Flow.StaveNote({ keys: [ "e/4", "g/4"], duration: "q" })
+  ];
+  // Create a voice in 4/4
+  var voice = new Vex.Flow.Voice({
+    num_beats: 4,
+    beat_value: 4,
+    resolution: Vex.Flow.RESOLUTION
+  });
+
+  // Add notes to voice
+  voice.addTickables(notes);
+
+  // Format and justify the notes to 500 pixels
+  var formatter = new Vex.Flow.Formatter().
+    joinVoices([voice]).format([voice], 500);
+
+  // Render voice
+  voice.draw(ctx, stave);
+</script>
 </body>
 </html>
