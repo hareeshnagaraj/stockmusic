@@ -1,5 +1,39 @@
 <!DOCTYPE html>
+<meta charset="utf-8">
 <head>
+  <!-- Style -->
+  <link rel="stylesheet" href="/static/css/nv.d3.css" type="text/css">
+  <style>
+
+  body {
+    overflow-y:scroll;
+  }
+
+  text {
+    font: 12px sans-serif;
+  }
+
+  svg {
+    display: block;
+  }
+
+  #chart1 svg {
+    height: 500px;
+    min-width: 200px;
+    min-height: 100px;
+  /*
+    margin: 50px;
+    Minimum height and width is a good idea to prevent negative SVG dimensions...
+    For example width should be =< margin.left + margin.right + 1,
+    of course 1 pixel for the entire chart would not be very useful, BUT should not have errors
+  */
+
+  }
+  #chart1 {
+    margin-top: 0px;
+    margin-left: 10px;
+  }
+  </style>
   <!-- D3 Charts include -->
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <!-- jQuery -->
@@ -8,80 +42,80 @@
   <script src="/static/js/test-data.js" charset="utf-8"></script>
   <!-- Line Graph -->
   <script src="/static/js/line-graph.js" charset="utf-8"></script>
-  <!-- Data Parser Object -->
-  <script src="/static/js/dataParser.js" charset="utf-8"></script>
+<script src="/static/js/dataParser.js" charset="utf-8"></script>
+<script src="/static/js/nvd3/nv.d3.js" charset="utf-8"></script>
+<script src="/static/js/nvd3/tooltip.js"></script>
+<script src="/static/js/nvd3/utils.js"></script>
+<script src="/static/js/nvd3/interactiveLayer.js"></script>
+<script src="/static/js/nvd3/models/legend.js"></script>
+<script src="/static/js/nvd3/models/axis.js"></script>
+<script src="/static/js/nvd3/models/scatter.js"></script>
+<script src="/static/js/nvd3/models/line.js"></script>
+<script src="/static/js/nvd3/models/lineChart.js"></script>
 
-  <!-- Style -->
-  <link rel="stylesheet" href="/static/css/style.css" type="text/css">
-  <script>
-  $(document).ready(function(){
-    var parser = new dataParser(testdata);
-    var data = parser.getValuesFor("High");
-    
-    var margin = {top: 20, right: 20, bottom: 30, left: 50},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
 
-    var parseDate = d3.time.format("%d-%b-%y").parse;
+<script>
+// Wrapping in nv.addGraph allows for '0 timeout render', stores rendered charts in nv.graphs, and may do more in the future... it's NOT required
+var chart;
 
-    var x = d3.time.scale()
-        .range([0, width]);
+nv.addGraph(function() {
+  chart = nv.models.lineChart()
+  .options({
+    margin: {left: 100, bottom: 100},
+    x: function(d,i) { return i},
+    showXAxis: true,
+    showYAxis: true,
+    transitionDuration: 250
+  })
+  ;
 
-    var y = d3.scale.linear()
-        .range([height, 0]);
+  // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
+  chart.xAxis
+    .axisLabel("Time (s)")
+    .tickFormat(d3.format(',.2f'));
 
-    var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom");
+  chart.yAxis
+    .axisLabel('Price')
+    .tickFormat(d3.format(',.2f'))
+    ;
 
-    var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left");
+  d3.select('#chart1 svg')
+    .datum(getChartValues())
+    .call(chart);
 
-    var line = d3.svg.line()
-        .x(function(d) { return x(d.date); })
-        .y(function(d) { return y(d.close); });
+  //TODO: Figure out a good way to do this automatically
+  nv.utils.windowResize(chart.update);
+  //nv.utils.windowResize(function() { d3.select('#chart1 svg').call(chart) });
+  chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-d3.tsv("/static/data.tsv", function(error, data) {
-  console.log(data)
-  data.forEach(function(d) {
-    d.date = parseDate(d.date);
-    d.close = +d.close;
-  });
-
-  x.domain(d3.extent(data, function(d) { return d.date; }));
-  y.domain(d3.extent(data, function(d) { return d.close; }));
-
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
-
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Price ($)");
-
-  svg.append("path")
-      .datum(data)
-      .attr("class", "line")
-      .attr("d", line);
+  return chart;
 });
-  });
-  </script>
+
+function getChartValues() {
+  var p1 = [];
+  var parser = new dataParser(testdata);
+  var results = parser.getValuesFor('High');
+  console.log(results)
+
+  for (var i = 0; i < results.length; i++) {
+    p1.push({x: results[i][0], y: results[i][1] }); //the nulls are to show how defined works
+  }
+
+  return [
+    {
+      values: p1,
+      key: "COCO Stock High",
+      color: "#ff7f0e"
+    }
+  ];
+}
+
+</script>
 </head>
-<body>
-  <div id="graph1" class="aGraph" style="position:relative;width:100%;height:400px"></div>
+<body >
+  <!-- Data Parser Object -->
+<div id="chart1" >
+<svg style="height: 500px;"></svg>
+</div>
 </body>
 </html>
