@@ -10,7 +10,7 @@
 # produce MIDI sounds.
 
 from flask import Flask
-import flask
+from flask import render_template
 import requests
 import sys
 
@@ -46,6 +46,10 @@ def build_query_string(args):
     return QUERY_STRING.format(ticker=args.get('ticker', ''),
                                start_date=args.get('start_date', ''),
                                end_date=args.get('end_date', ''))
+
+@app.route("/basic")
+def test():
+  return render_template('basic.html')
 
 if __name__ == '__main__':
     app.debug = True
