@@ -297,24 +297,22 @@ function LineGraph(argsMap) {
     
     var maxValues = [];
     var rounding = getOptionalVar(dataMap, 'rounding', []);
+
     // default rounding values
     if(rounding.length == 0) {
       displayNames.forEach(function (v, i) {
         // set the default to 0 decimals
         rounding[i] = 0;
-      })
+      });
     }
     
     /* copy the dataValues array, do NOT assign the reference otherwise we modify the original source when we shift/push data */
     var newDataValues = [];
     dataValues.forEach(function (v, i) {
       newDataValues[i] = v.slice(0);
-      maxValues[i] = d3.max(newDataValues[i])
-    })
+      maxValues[i] = d3.max(newDataValues[i]);
+    });
 
-    
-
-    
     return {
       "values" : newDataValues,
       "startTime" : startTime,
@@ -396,7 +394,7 @@ function LineGraph(argsMap) {
         .attr("d", lineFunction)
         .attr("transform", null);
     }
-  }
+  };
   
   /*
    * Allow re-initializing the y function at any time.
@@ -409,7 +407,8 @@ function LineGraph(argsMap) {
   
   var initYleft = function() {
     var maxYscaleLeft = calculateMaxY(data, 'left')
-    //debug("initY => maxYscale: " + maxYscaleLeft);
+    console.log("max y " + maxYscaleLeft);
+    // debug("initY => maxYscale: " + maxYscaleLeft);
     var numAxisLabels = 6;
     if(yScale == 'pow') {
       yLeft = d3.scale.pow().exponent(0.3).domain([0, maxYscaleLeft]).range([h, 0]).nice(); 
@@ -458,7 +457,7 @@ function LineGraph(argsMap) {
       // we get the max of the max of values for the given index since we expect an array of arrays
 
     // we can shortcut to using data.maxValues since we've already calculated the max of each series in processDataMap
-
+    // console.log(whichAxis)
     var maxValuesForAxis = [];
     data.maxValues.forEach(function(v, i) {
       if(data.axis[i] == whichAxis) {
@@ -605,7 +604,6 @@ function LineGraph(argsMap) {
       handleMouseOverGraph(event);
     })    
 
-          
     // add a line group for each array of values (it will iterate the array of arrays bound to the data function above)
     linesGroup = lines.enter().append("g")
         .attr("class", function(d, i) {
@@ -636,7 +634,7 @@ function LineGraph(argsMap) {
       .text(function(d, i) {
         return "";
       });
-      
+    // console.log(linesGroup)
     // add a 'hover' line that we'll show as a user moves their mouse (or finger)
     // so we can use it to show detailed values of each line
     hoverLineGroup = graph.append("svg:g")
@@ -720,45 +718,45 @@ function LineGraph(argsMap) {
    * Create scale buttons for switching the y-axis
    */
   var createScaleButtons = function() {
-    var cumulativeWidth = 0;    
-    // append a group to contain all lines
-    var buttonGroup = graph.append("svg:g")
-        .attr("class", "scale-button-group")
-      .selectAll("g")
-        .data(scales)
-      .enter().append("g")
-        .attr("class", "scale-buttons")
-      .append("svg:text")
-        .attr("class", "scale-button")
-        .text(function(d, i) {
-          return d[1];
-        })
-        .attr("font-size", "12") // this must be before "x" which dynamically determines width
-        .attr("fill", function(d) {
-          if(d[0] == yScale) {
-            return "black";
-          } else {
-            return "blue";
-          }
-        })
-        .classed("selected", function(d) {
-          if(d[0] == yScale) {
-            return true;
-          } else {
-            return false;
-          }
-        })
-        .attr("x", function(d, i) {
-          // return it at the width of previous labels (where the last one ends)
-          var returnX = cumulativeWidth;
-          // increment cumulative to include this one
-          cumulativeWidth += this.getComputedTextLength()+5;
-          return returnX;
-        })
-        .attr("y", -4)
-        .on('click', function(d, i) {
-          handleMouseClickScaleButton(this, d, i);
-        });
+    // var cumulativeWidth = 0;    
+    // // append a group to contain all lines
+    // var buttonGroup = graph.append("svg:g")
+    //     .attr("class", "scale-button-group")
+    //   .selectAll("g")
+    //     .data(scales)
+    //   .enter().append("g")
+    //     .attr("class", "scale-buttons")
+    //   .append("svg:text")
+    //     .attr("class", "scale-button")
+    //     .text(function(d, i) {
+    //       return d[1];
+    //     })
+    //     .attr("font-size", "12") // this must be before "x" which dynamically determines width
+    //     .attr("fill", function(d) {
+    //       if(d[0] == yScale) {
+    //         return "black";
+    //       } else {
+    //         return "blue";
+    //       }
+    //     })
+    //     .classed("selected", function(d) {
+    //       if(d[0] == yScale) {
+    //         return true;
+    //       } else {
+    //         return false;
+    //       }
+    //     })
+    //     .attr("x", function(d, i) {
+    //       // return it at the width of previous labels (where the last one ends)
+    //       var returnX = cumulativeWidth;
+    //       // increment cumulative to include this one
+    //       cumulativeWidth += this.getComputedTextLength()+5;
+    //       return returnX;
+    //     })
+    //     .attr("y", -4)
+    //     .on('click', function(d, i) {
+    //       handleMouseClickScaleButton(this, d, i);
+    //     });
   }
 
   var handleMouseClickScaleButton = function(button, buttonData, index) {
@@ -795,15 +793,16 @@ function LineGraph(argsMap) {
   var createDateLabel = function() {
     var date = new Date(); // placeholder just so we can calculate a valid width
     // create the date label to the left of the scaleButtons group
-    var buttonGroup = graph.append("svg:g")
-        .attr("class", "date-label-group")
-      .append("svg:text")
-        .attr("class", "date-label")
-        .attr("text-anchor", "end") // set at end so we can position at far right edge and add text from right to left
-        .attr("font-size", "10") 
-        .attr("y", -4)
-        .attr("x", w)
-        .text(date.toDateString() + " " + date.toLocaleTimeString())
+
+    // var buttonGroup = graph.append("svg:g")
+    //     .attr("class", "date-label-group")
+    //   .append("svg:text")
+    //     .attr("class", "date-label")
+    //     .attr("text-anchor", "end") // set at end so we can position at far right edge and add text from right to left
+    //     .attr("font-size", "10") 
+    //     .attr("y", -4)
+    //     .attr("x", w)
+    //     .text(date.toDateString() + " " + date.toLocaleTimeString())
         
   }
 
