@@ -10,7 +10,7 @@
 # produce MIDI sounds.
 
 from flask import Flask
-from flask import render_template
+import flask
 import requests
 import sys
 
@@ -32,7 +32,7 @@ except IOError as e:
 
 @app.route("/")
 def home():
-    render_template('basic.html')
+    flask.render_template('basic.html')
 
 # query quandl api for stock market data and return results as json
 @app.route("/query")
