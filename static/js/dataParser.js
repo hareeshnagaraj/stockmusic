@@ -5,8 +5,8 @@ dataParser is the file used to parse the API response into the appropriate data 
 */
 function dataParser(initial){ //Takes in the initial data as a parameter
   this.data = initial;
-  this.JSONdata;
-  this.columnNames;
+  this.JSONdata = this.data.data;;
+  this.columnNames = this.data.column_names;
   this.startDate;
   this.endDate;
   this.parse();
@@ -25,34 +25,13 @@ dataParser.prototype.getValuesFor = function(param){    //Parses the data into t
       count = i;
     }
   }
-
-
   if(count != -1){
     for(var j = 0; j < this.JSONdata.length; j++){
       // var XY = [this.JSONdata[j][0], this.JSONdata[j][count]];
-      returnCoordinates.push([this.JSONdata[j][count]]);
+      returnCoordinates.push([this.JSONdata[j][0],this.JSONdata[j][count]]);
     }
   }
-  console.log(returnCoordinates)
-  var first = this.JSONdata[0][0];
-  var last = this.JSONdata[this.JSONdata.length - 1][0];
-  console.log("last " + last);
-  // getMilli(first)
-
-  var names = ['Price'];
-  var step = (first - last)/(this.JSONdata.length);
-  
-  var returnMap = {}; //Building the final return object
-  returnMap.start = first;
-  returnMap.end = last;
-  returnMap.step = 1;
-  returnMap.names = names;
-  returnMap.values = returnCoordinates;
-  returnMap.scale = "linear";
-  returnMap.displayNames = ['Price ', ' Date purchased'];
-  // returnMap.axis = ['left','right'];
-  console.log(returnMap);
-  return returnMap;
+  return returnCoordinates;
 };
 
 function getMilli(date){

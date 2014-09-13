@@ -13,6 +13,7 @@ from flask import Flask
 import flask
 import requests
 import sys
+from flask import render_template
 
 app = Flask(__name__)
 
@@ -32,7 +33,7 @@ except IOError as e:
 
 @app.route("/")
 def home():
-    flask.render_template('basic.html')
+    return render_template('basic.html')
 
 # query quandl api for stock market data and return results as json
 @app.route("/query")
