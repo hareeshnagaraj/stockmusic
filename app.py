@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # app.py
 # created by: Ryan Beatty and Hareesh Nagaraj
 #
