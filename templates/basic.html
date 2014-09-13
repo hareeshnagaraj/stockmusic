@@ -40,6 +40,8 @@
   <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <!-- Data -->
   <script src="/static/js/require.js" charset="utf-8"></script>
+  <!-- Converter -->
+  <script src="/static/js/converter.js"></script>
   <!-- Line Graph, nvd3-->
   <script src="/static/js/line-graph.js" charset="utf-8"></script>
   <script src="/static/js/dataParser.js" charset="utf-8"></script>
@@ -97,6 +99,9 @@
         "duration_audio":2
       },
     ];
+
+    var converter
+
     //adding the midi player onload
     $(window).load(function(){
       MIDI.loadPlugin({
@@ -112,6 +117,8 @@
         success:function(data){
           console.log(data)
           chartCreator(data,nv);
+          converter = new Converter(data)
+          console.log(converter.data)
         },
         dataType:'json'
       });
