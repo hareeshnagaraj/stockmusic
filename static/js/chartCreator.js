@@ -46,6 +46,8 @@ var p1 = [];
 for (var i = 0; i < data.length; i++) {
   p1.push({x: data[i]['time'], y: data[i]['close'] }); //the nulls are to show how defined works
 }
+
+
 return [
   {
     values: p1,

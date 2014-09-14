@@ -13,7 +13,7 @@ function drawnotes(notes,flag){
     Vex.Flow.Renderer.Backends.CANVAS);
 
   var ctx = renderer.getContext();
-  var stave = new Vex.Flow.Stave(0, 20, 1100);
+  var stave = new Vex.Flow.Stave(0, 50, 1100);
   stave.addClef("treble").setContext(ctx).draw();
   
   var vexNotes = []
