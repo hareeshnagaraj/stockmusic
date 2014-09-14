@@ -138,7 +138,8 @@
     $( "#tags" ).autocomplete({
       source: availableTags,
       select: function(event,ui){
-        currentStock = event.currentTarget.innerText;
+        currentStock = event.currentTarget.innerText.substring(0,currentStock.length - 1);
+        $("#stockName").html("How does " + currentStock + " sound today?");
         $.ajax({
           url:'/query',
           data:{ticker:currentStock},
@@ -146,18 +147,7 @@
             // console.log(data)
             shareData = data;
             chartCreator(shareData,nv);
-            converter = new Converter(shareData,function(result){
-              console.log(result)
-              if(result[0] == 'finished'){
-                // console.log(result[1])
-                drawnotes(result[1])
-                $("#playbutton > span").html("<img style='width:20px;;margin-top:20px;' src='/static/img/play_button.png' />");
-                $("#playbutton").click(function(){
-                  play(result[1])
-                  console.log("clicked!")
-                });
-              }
-            })
+
           },
           error:function(data){
             console.log("error")
