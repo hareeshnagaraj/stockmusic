@@ -48,6 +48,14 @@ def build_query_string(args):
                                start_date=args.get('start_date', ''),
                                end_date=args.get('end_date', ''))
 
+@app.route("/test")
+def test():
+  import SimpleIntradayTickExample as ex
+
+  ex.main(["--ip", "10.8.8.1", "-s", flask.request.args.get("ticker", "")])
+  return "hello"
+
+
 if __name__ == '__main__':
     app.debug = True
     app.run()
