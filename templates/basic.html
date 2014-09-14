@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <head>
   <!-- Google Menu  -->
-  <link rel="stylesheet" href="/static/google_menu/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/static/google_menu/css/demo.css" type="text/css">
   <link rel="stylesheet" href="/static/google_menu/css/component.css" type="text/css">
   <link rel="stylesheet" href="/static/google_menu/css/normalize.css" type="text/css">
 
@@ -13,6 +13,7 @@
     overflow-y:scroll;
     text-align: center;
     padding-top:60px;
+    background-color: rgb(250,250,250);
   }
   text {
     font: 12px sans-serif;
@@ -80,7 +81,6 @@
   <!-- Chart Creation  -->
   <script src="/static/js/chartCreator.js"></script>
   <script src="/static/js/staffCreator.js"></script>
-  
   <script>
     /*
     Creating a global notes object to be accessed and updated independently by Vexflow and audiosynth.js
@@ -113,7 +113,6 @@
     ];
     var converter;
     var playButton = 0;
-    
   </script>
 </head>
 <body >
@@ -124,7 +123,7 @@
   <input placeholder="Search" type="search" class="gn-search">
   <a class="gn-icon gn-icon-search"><span>Search</span></a>
   </li>
-  <li id="playbutton" style="opacity:1;"><span>Loading</span></li>
+  <li id="playbutton" style="opacity:1;"><span><img style='width:20px;;margin-top:20px;' src='/static/img/play_button.png' /></span></li>
   <li style="opacity:0;"><span>What's in your wallet?</span></li>
 </ul>
 <!-- Nav -->
@@ -143,17 +142,37 @@
 </script>
 <script>
   var that;
+  var currentStock = 'MSFT'; 
   $(document).ready(function(){
+  var shareData = testdata;
+
+    $.ajax({
+      url:'/query',
+      data:{ticker:currentStock},
+      success:function(data){
+        // console.log(data)
+        shareData = data;
+      },
+      error:function(data){
+        console.log("error")
+        // console.log(data)
+      }
+    });
+
+
     MIDI.loadPlugin({
       soundfontUrl: "/static/js/MIDIJS/soundfont/",
       instruments: [ "acoustic_grand_piano"],
-      callback: function() {
+      callback: function(success,err) {
         // playNotes(); 
-        chartCreator(testdata,nv);
-        converter = new Converter(testdata.data,function(result){
+        chartCreator(shareData,nv);
+
+        converter = new Converter(shareData,function(result){
+          // console.log(result)
           if(result[0] == 'finished'){
+            console.log(result[1])
             drawnotes(result[1])
-            $("#playbutton > span").html("Play");
+            $("#playbutton > span").html("<img style='width:20px;;margin-top:20px;' src='/static/img/play_button.png' />");
             $("#playbutton").click(function(){
               play(result[1])
             });
@@ -164,12 +183,10 @@
   });
 </script>
 
-
-<div class="tempButton"></div>
 <script src="/static/google_menu/js/classie.js"></script>
 <script src="/static/google_menu/js/gnmenu.js"></script>
 <script>
-  new gnMenu( document.getElementById( 'gn-menu' ) );
+  // new gnMenu( document.getElementById( 'gn-menu' ) );
 </script>
 </body>
 </html>

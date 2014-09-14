@@ -146,7 +146,7 @@ def get_prices(args=None):
     request = refDataService.createRequest("IntradayBarRequest")
     request.set("security", "%s US Equity" % options.security)
     request.set("eventType", "TRADE")
-    request.set("interval", 60)  # bar interval in minutes
+    request.set("interval", 5)  # bar interval in minutes
 
     tradedOn = getPreviousTradingDate()
     if not tradedOn:

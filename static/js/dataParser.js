@@ -17,19 +17,10 @@ dataParser.prototype.parse = function(callback){  //Stores the data and column n
   this.JSONdata = this.data.data;
 };
 
-dataParser.prototype.getValuesFor = function(param){    //Parses the data into the appropriate x y values for use with D3
-  var count = -1;
+dataParser.prototype.getValues = function(param){    //Parses the data into the appropriate x y values for use with D3
   var returnCoordinates = [];
-  for(var i = 0; i < this.columnNames.length; i++){
-    if(this.columnNames[i] == param){
-      count = i;
-    }
-  }
-  if(count != -1){
-    for(var j = 0; j < this.JSONdata.length; j++){
-      // var XY = [this.JSONdata[j][0], this.JSONdata[j][count]];
-      returnCoordinates.push([this.JSONdata[j][0],this.JSONdata[j][count]]);
-    }
+  for(var j = 0; j < this.data.length; j++){
+    returnCoordinates.push([this.data[j]["time"],this.data[j]["close"]]);
   }
   return returnCoordinates;
 };

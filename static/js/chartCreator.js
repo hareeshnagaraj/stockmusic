@@ -4,6 +4,7 @@
 
 */
 function chartCreator(initial,nv){
+
   this.data = initial;
   var chart;
   nv.addGraph(function() {
@@ -41,18 +42,14 @@ function chartCreator(initial,nv){
 
 function getChartValues(data) {
 var p1 = [];
-var parser = new dataParser(data);
-var results = parser.getValuesFor('High');
-// console.log(results);
-
-for (var i = 0; i < results.length; i++) {
-  p1.push({x: results[i][0], y: results[i][1] }); //the nulls are to show how defined works
+// console.log(datumta)
+for (var i = 0; i < data.length; i++) {
+  p1.push({x: data[i]['time'], y: data[i]['close'] }); //the nulls are to show how defined works
 }
-
 return [
   {
     values: p1,
-    key: data.code + " Stock High",
+    key: currentStock + " Stock High",
     color: "#ff7f0e"
   }
 ];

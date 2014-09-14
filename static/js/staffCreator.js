@@ -3,7 +3,7 @@
   This class creates the staff used to display the notes on the index page
 
 */
-function drawnotes(notes, canvasID){
+function drawnotes(notes){
   $(".a").append('<canvas id="canvas" width="1115" height="500"></canvas>');
   var canvas = $(".one .a canvas")[0];
   var renderer = new Vex.Flow.Renderer(canvas,
@@ -18,7 +18,7 @@ function drawnotes(notes, canvasID){
     var currentNote = midiToNote(notes[n]);
     var height = (currentNote[1] % 3) + 4;
     var string = String(currentNote[0]) + "/" + String(height);
-    console.log(string)
+    // console.log(string)
     vexNotes.push(new Vex.Flow.StaveNote({ keys: [string], duration: "q" }));
   }
    var voice = new Vex.Flow.Voice({
@@ -45,16 +45,18 @@ function play(b){
     // play the note
     MIDI.noteOn(1, note, velocity, delay);
     // play the some note 3-steps up
-    MIDI.noteOn(1, note + 3, velocity, delay);
+    MIDI.noteOn(1, note + 8, velocity, delay);
   }
 }
 
 //midiToNote
 function midiToNote(initialNote){
+  console.log(initialNote + " midiToNote")
   initialNote = parseInt(initialNote)
   var noteString = [ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
   var octave = (initialNote/12) - 1;  
   var noteIndex = (initialNote % 12);
   var note = noteString[noteIndex];
+  console.log(noteIndex)
   return [note,noteIndex];
 }
