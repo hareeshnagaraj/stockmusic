@@ -62,9 +62,6 @@ def home():
 # query quandl api for stock market data and return results as json
 @app.route("/query")
 def get_data():
-    # resp = requests.get(build_query_string(flask.request.args))
-    # resp.raise_for_status()
-
     data = getprices.get_prices(['--ip', '10.8.8.1',
                                  '-s', flask.request.args.get('ticker', '')])
 
