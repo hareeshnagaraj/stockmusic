@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <head>
+  <!-- Google Menu  -->
+  <link rel="stylesheet" href="/static/google_menu/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/static/google_menu/css/component.css" type="text/css">
+  <link rel="stylesheet" href="/static/google_menu/css/normalize.css" type="text/css">
+
   <!-- Style -->
   <link rel="stylesheet" href="/static/css/nv.d3.css" type="text/css">
   <style>
@@ -38,6 +43,7 @@
     margin:auto;
   }
   </style>
+
   <!-- D3 Charts include -->
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <!-- jQuery -->
@@ -108,7 +114,17 @@
   </script>
 </head>
 <body >
-  <!-- Data Parser Object -->
+<!-- Nav -->
+<ul id="gn-menu" class="gn-menu-main">
+  <li style="opacity:1;margin-left:50px;"><span>stock<font style="bold">music</font></span></li>
+  <li class="gn-search-item">
+  <input placeholder="Search" type="search" class="gn-search">
+  <a class="gn-icon gn-icon-search"><span>Search</span></a>
+  </li>
+  <li style="opacity:0;"><span>What's in your wallet?</span></li>
+</ul>
+<!-- Nav -->
+<!-- Data Parser Object -->
 <div id="chart1" >
   <svg style="height: 500px;"></svg>
 </div>
@@ -143,5 +159,10 @@
 
 
 <div class="tempButton"></div>
+<script src="/static/google_menu/js/classie.js"></script>
+<script src="/static/google_menu/js/gnmenu.js"></script>
+<script>
+  new gnMenu( document.getElementById( 'gn-menu' ) );
+</script>
 </body>
 </html>

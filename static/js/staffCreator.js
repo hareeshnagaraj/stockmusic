@@ -12,8 +12,7 @@ function drawnotes(notes, canvasID){
   var ctx = renderer.getContext();
   var stave = new Vex.Flow.Stave(0, 20, 1100);
   stave.addClef("treble").setContext(ctx).draw();
-  stave.addClef("bass").setContext(ctx).draw();
-
+  
   var vexNotes = []
   for(var n = 0; n < notes.length; n++){
     var currentNote = midiToNote(notes[n]);
