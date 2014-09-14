@@ -4,13 +4,13 @@
 
 */
 function drawnotes(notes, canvasID){
-  $(".a").append('<canvas id="canvas" width="1080" height="1000"></canvas>');
+  $(".a").append('<canvas id="canvas" width="1115" height="500"></canvas>');
   var canvas = $(".one .a canvas")[0];
   var renderer = new Vex.Flow.Renderer(canvas,
     Vex.Flow.Renderer.Backends.CANVAS);
 
   var ctx = renderer.getContext();
-  var stave = new Vex.Flow.Stave(0, 50, 1000);
+  var stave = new Vex.Flow.Stave(0, 20, 1100);
   stave.addClef("treble").setContext(ctx).draw();
   stave.addClef("bass").setContext(ctx).draw();
 

@@ -44,6 +44,9 @@ def get_data():
 @app.route("/test")
 def get_data2():
     return "hey"
+@app.route("/index")
+def index():
+    return render_template('index.html');
 
 # generate string used to query quandl api
 def build_query_string(args):
