@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="/static/google_menu/css/demo.css" type="text/css">
   <link rel="stylesheet" href="/static/google_menu/css/component.css" type="text/css">
   <link rel="stylesheet" href="/static/google_menu/css/normalize.css" type="text/css">
-
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
   <!-- Style -->
   <link rel="stylesheet" href="/static/css/nv.d3.css" type="text/css">
   <style>
@@ -25,12 +25,16 @@
     height: 500px;
     min-width: 200px;
     min-height: 100px;
+
   /*
     margin: 50px;
     Minimum height and width is a good idea to prevent negative SVG dimensions...
     For example width should be =< margin.left + margin.right + 1,
     of course 1 pixel for the entire chart would not be very useful, BUT should not have errors
   */
+  }
+  #tags{
+    outline: none;
   }
   #chart1 {
     margin-top: 0px;
@@ -50,6 +54,7 @@
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <!-- jQuery -->
   <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
   <!-- Data -->
   <script src="/static/js/require.js" charset="utf-8"></script>
   <!-- Converter -->
@@ -82,6 +87,7 @@
   <script src="/static/js/chartCreator.js"></script>
   <script src="/static/js/staffCreator.js"></script>
   <script>
+    var currentStock = 'GOOG';
     /*
     Creating a global notes object to be accessed and updated independently by Vexflow and audiosynth.js
     */
@@ -114,17 +120,68 @@
     var converter;
     var playButton = 0;
   </script>
+  <script>
+  $(function() {
+    var availableTags = [
+      "AAPL",
+      "GOOG",
+      "COCO",
+      "MSFT",
+      "KO",
+      "CCE",
+      "JOY",
+      "JCP",
+      "MCD",
+      "NKE",
+      "GS"
+    ];
+    $( "#tags" ).autocomplete({
+      source: availableTags,
+      select: function(event,ui){
+        currentStock = event.currentTarget.innerText;
+        $.ajax({
+          url:'/query',
+          data:{ticker:currentStock},
+          success:function(data){
+            // console.log(data)
+            shareData = data;
+            chartCreator(shareData,nv);
+            converter = new Converter(shareData,function(result){
+              console.log(result)
+              if(result[0] == 'finished'){
+                // console.log(result[1])
+                drawnotes(result[1])
+                $("#playbutton > span").html("<img style='width:20px;;margin-top:20px;' src='/static/img/play_button.png' />");
+                $("#playbutton").click(function(){
+                  play(result[1])
+                  console.log("clicked!")
+                });
+              }
+            })
+          },
+          error:function(data){
+            console.log("error")
+            // console.log(data)
+          }
+        });
+      }
+    });
+  });
+  </script>
 </head>
 <body >
 <!-- Nav -->
 <ul id="gn-menu" class="gn-menu-main">
-  <li style="opacity:1;margin-left:50px;"><span>stock<font style="bold">music</font></span></li>
-  <li class="gn-search-item">
-  <input placeholder="Search" type="search" class="gn-search">
-  <a class="gn-icon gn-icon-search"><span>Search</span></a>
+  <li style="opacity:1;margin-left:50px;font-size:25px;"><span>stock<font style="bold">music</font></span></li>
+  <li id="playbutton" style="opacity:1;margin-left:25px;"><span><img style='width:20px;;margin-top:20px;' src='/static/img/play_button.png' /></span></li>
+  <li id="stockName" style="font-size:20px;margin-left:30px;font-weight: normal;"></li>
+  <li id="searchWidget">
+    <div style="z-index:500;">
+      <label for="tags"></label>
+        <input placeholder="Search" id="tags">
+    </div>
   </li>
-  <li id="playbutton" style="opacity:1;"><span><img style='width:20px;;margin-top:20px;' src='/static/img/play_button.png' /></span></li>
-  <li style="opacity:0;"><span>What's in your wallet?</span></li>
+  <li style="display:none;"><span>What's in your wallet?</span></li>
 </ul>
 <!-- Nav -->
 <!-- Data Parser Object -->
@@ -136,16 +193,12 @@
     <!-- <canvas id="canvas" width="1080" height="1000"></canvas> -->
   </div>
 </div>
-<script> //vexflow script for display of musical stuff
-
-
-</script>
 <script>
   var that;
-  var currentStock = 'AAPL'; 
+  
   $(document).ready(function(){
   var shareData = testdata;
-  
+  $("#stockName").html("How does " + currentStock + " sound today?");
 
     $.ajax({
       url:'/query',
@@ -165,15 +218,11 @@
       soundfontUrl: "/static/js/MIDIJS/soundfont/",
       instruments: [ "acoustic_grand_piano"],
       callback: function(success,err) {
-        // playNotes(); 
-
         chartCreator(shareData,nv);
-
         converter = new Converter(shareData,function(result){
           console.log(result)
           if(result[0] == 'finished'){
             // console.log(result[1])
-            play(result[1])
             drawnotes(result[1])
             $("#playbutton > span").html("<img style='width:20px;;margin-top:20px;' src='/static/img/play_button.png' />");
             $("#playbutton").click(function(){

@@ -5,10 +5,11 @@ function Converter(data,callback) {
 
 	// console.log(raw_data)
 	var max = find_max(raw_data)
-
-	for( var i = 0; i < raw_data.length; i++){
+	this.notes[0] = 60;
+	for( var i = 1; i < raw_data.length; i++){
 		// console.log(raw_data[i])
-		var next_note = raw_data[i]['close'] * 100 / max;
+		var next_note = raw_data[i]['close'] * 80 / max;
+
 		console.log(next_note)
 		this.notes.push(Math.round(next_note));
 		if( i == raw_data.length - 1 ){
@@ -18,6 +19,7 @@ function Converter(data,callback) {
 	}
 
 }
+
 
 
 function calculate_change(cur_item, prev_item) {
