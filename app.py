@@ -19,7 +19,6 @@ app = Flask(__name__)
 
 
 try:
-
     # Attempt to read quandl api token
     # or exit if file not found
     with open('token.txt', 'r') as f:
@@ -42,6 +41,13 @@ def get_data():
     resp.raise_for_status()
     return flask.jsonify(resp.json()), 200
 
+@app.route("/test")
+def get_data2():
+    return "hey"
+@app.route("/index")
+def index():
+    return render_template('index.html');
+
 # generate string used to query quandl api
 def build_query_string(args):
     return QUERY_STRING.format(ticker=args.get('ticker', ''),
@@ -50,4 +56,4 @@ def build_query_string(args):
 
 if __name__ == '__main__':
     app.debug = True
-    app.run()
+    app.run(host=None, port=4000, debug=None)
