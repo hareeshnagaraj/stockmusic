@@ -111,12 +111,6 @@ def main(args=None):
         print "Failed to open //blp/refdata"
         return
 
-    # refDataService = session.getService("//blp/refdata")
-    # request = refDataService.createRequest("IntradayTickRequest")
-    # request.set("security", "VOD LN Equity")
-    # request.getElement("eventTypes").appendValue("TRADE")
-    # # request.getElement("eventTypes").appendValue("AT_TRADE")
-    # request.set("includeConditionCodes", True)
     refDataService = session.getService("//blp/refdata")
     request = refDataService.createRequest("IntradayBarRequest")
     request.set("security", "%s US Equity" % options.security)
@@ -133,6 +127,14 @@ def main(args=None):
 
     endTime = datetime.datetime.combine(tradedOn, datetime.time(21, 30))
     request.set("endDateTime", endTime)
+
+    startTime = datetime.datetime.strptime("%Y-%m-%d", options.startDateTime)
+    endTime = datetime.datetime.strptime("%Y-%m-%d", options.endDateTime)
+    
+    # request.set("startDateTime", startTime)
+    # request.set("endDateTime", endTime)
+    # request.set("startDateTime", options.startDateTime)
+    # request.set("endDateTime", options.endDateTime)
 
     print "Sending Request:", request
     session.sendRequest(request)
