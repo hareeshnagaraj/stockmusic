@@ -52,6 +52,10 @@ class DateTimeEncoder(json.JSONEncoder):
 
 
 @app.route("/")
+def index():
+  return render_template('index.html')
+
+@app.route("/home")
 def home():
     return render_template('basic.html')
 
@@ -66,26 +70,12 @@ def get_data():
 
     return flask.Response(json.dumps(data, cls=DateTimeEncoder), mimetype="application/json")
 
-
-@app.route("/test")
-def get_data2():
-    return "hey"
-@app.route("/index")
-def index():
-    return render_template('index.html');
-
 # generate string used to query quandl api
 def build_query_string(args):
     return QUERY_STRING.format(ticker=args.get('ticker', ''),
                                start_date=args.get('start_date', ''),
                                end_date=args.get('end_date', ''))
 
-@app.route("/test")
-def test():
-  import SimpleIntradayTickExample as ex
-
-  ex.main(["--ip", "10.8.8.1", "-s", flask.request.args.get("ticker", "")])
-  return "hello"
 
 
 if __name__ == '__main__':
