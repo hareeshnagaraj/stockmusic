@@ -7,6 +7,7 @@ function drawnotes(notes,flag){
   if(flag){
     $("#canvas").remove();
   }
+  console.log(notes)
   $(".a").append('<canvas id="canvas" width="1115" height="500"></canvas>');
   var canvas = $(".one .a canvas")[0];
   var renderer = new Vex.Flow.Renderer(canvas,
