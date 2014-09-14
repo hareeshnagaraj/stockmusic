@@ -1,6 +1,6 @@
 function Converter(data,callback) {
 	var raw_data = data
-	console.log(raw_data[0]);
+	// console.log(raw_data[0]);
 	this.notes = [];
 
 	var max = find_max(raw_data)
@@ -20,7 +20,7 @@ function Converter(data,callback) {
 
 
 function calculate_change(cur_item, prev_item) {
-	console.log(cur_item)
+	// console.log(cur_item)
 	var d_price = cur_item['close'] - prev_item['close'];
 	var d_time = (Date.parse(cur_item['time']) - Date.parse(prev_item['time']))/86400000;
 	return d_price / d_time;

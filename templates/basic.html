@@ -142,8 +142,10 @@
     $( "#tags" ).autocomplete({
       source: availableTags,
       select: function(event,ui){
-        currentStock = event.currentTarget.innerText;
-        currentStock = currentStock.replace(/(\r\n|\n|\r)/gm,"");
+        console.log(event)
+        currentStock = $("#tags").val();
+        console.log(currentStock)
+        // currentStock = currentStock.replace(/(\r\n|\n|\r)/g,"");
         $("#stockName").html("How does " + currentStock + " sound today?");
         $.ajax({
           url:'/query',
@@ -169,7 +171,7 @@
           },
           error:function(data){
             console.log("error")
-            // console.log(data)
+            console.log(data)
           }
         });
       }
@@ -186,7 +188,7 @@
   <li id="searchWidget" style="margin-left:50px;margin-top:0px;">
     <div style="z-index:500;">
       <label for="tags"></label>
-        <input placeholder="Search" id="tags">
+        <input placeholder="Search" id="tags" >
     </div>
   </li>
   <li style="display:none;"><span>What's in your wallet?</span></li>
