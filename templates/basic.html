@@ -142,9 +142,10 @@
 </script>
 <script>
   var that;
-  var currentStock = 'MSFT'; 
+  var currentStock = 'AAPL'; 
   $(document).ready(function(){
   var shareData = testdata;
+  
 
     $.ajax({
       url:'/query',
@@ -165,22 +166,53 @@
       instruments: [ "acoustic_grand_piano"],
       callback: function(success,err) {
         // playNotes(); 
+
         chartCreator(shareData,nv);
 
         converter = new Converter(shareData,function(result){
-          // console.log(result)
+          console.log(result)
           if(result[0] == 'finished'){
-            console.log(result[1])
+            // console.log(result[1])
+            play(result[1])
             drawnotes(result[1])
             $("#playbutton > span").html("<img style='width:20px;;margin-top:20px;' src='/static/img/play_button.png' />");
             $("#playbutton").click(function(){
               play(result[1])
+              console.log("clicked!")
             });
           }
         })
       }
     });
   });
+
+function play(b){
+  MIDI.programChange(0, 1);
+  // MIDI.programChange(1, 118);
+  for (var n = 0; n < b.length; n ++) {
+    var delay =  n / 4; // play one note every quarter second
+    // var note = MIDI.pianoKeyOffset + parseInt(n); // the MIDI note
+    var note = b[n]
+    var velocity = 127; // how hard the note hits
+    // var velocity = 0;
+    // play the note
+    console.log("in play" + n+ " note " + note)
+    MIDI.noteOn(1, note, velocity, delay);
+    // play the some note 3-steps up
+    MIDI.noteOn(1, note + 3, velocity, delay);
+  }
+}
+
+//midiToNote
+function midiToNote(initialNote){
+  initialNote = parseInt(initialNote)
+  var noteString = [ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  var octave = (initialNote/12) - 1;  
+  var noteIndex = (initialNote % 12);
+  var note = noteString[noteIndex];
+  // console.log(noteIndex)
+  return [note,noteIndex];
+}
 </script>
 
 <script src="/static/google_menu/js/classie.js"></script>

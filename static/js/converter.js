@@ -8,7 +8,7 @@ function Converter(data,callback) {
 
 	for( var i = 0; i < raw_data.length; i++){
 		// console.log(raw_data[i])
-		var next_note = raw_data[i]['close'] * 128 / max;
+		var next_note = raw_data[i]['close'] * 100 / max;
 		console.log(next_note)
 		this.notes.push(Math.round(next_note));
 		if( i == raw_data.length - 1 ){

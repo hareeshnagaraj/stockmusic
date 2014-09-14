@@ -35,28 +35,4 @@ function drawnotes(notes){
   // Render voice
   voice.draw(ctx, stave);
 }
-function play(b){
-  MIDI.programChange(0, 0);
-  for (var n = 0; n < b.length; n ++) {
-    var delay = n ; // play one note every quarter second
-    var note = MIDI.pianoKeyOffset + parseInt(b[n]); // the MIDI note
-    var velocity = n + 100; // how hard the note hits
-    // var velocity = 0;
-    // play the note
-    MIDI.noteOn(1, note, velocity, delay);
-    // play the some note 3-steps up
-    MIDI.noteOn(1, note + 8, velocity, delay);
-  }
-}
 
-//midiToNote
-function midiToNote(initialNote){
-  console.log(initialNote + " midiToNote")
-  initialNote = parseInt(initialNote)
-  var noteString = [ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-  var octave = (initialNote/12) - 1;  
-  var noteIndex = (initialNote % 12);
-  var note = noteString[noteIndex];
-  console.log(noteIndex)
-  return [note,noteIndex];
-}
