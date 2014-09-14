@@ -12,6 +12,7 @@
   body {
     overflow-y:scroll;
     text-align: center;
+    padding-top:60px;
   }
   text {
     font: 12px sans-serif;
@@ -111,6 +112,8 @@
       },
     ];
     var converter;
+    var playButton = 0;
+    
   </script>
 </head>
 <body >
@@ -121,6 +124,7 @@
   <input placeholder="Search" type="search" class="gn-search">
   <a class="gn-icon gn-icon-search"><span>Search</span></a>
   </li>
+  <li id="playbutton" style="opacity:1;"><span>Loading</span></li>
   <li style="opacity:0;"><span>What's in your wallet?</span></li>
 </ul>
 <!-- Nav -->
@@ -149,7 +153,10 @@
         converter = new Converter(testdata.data,function(result){
           if(result[0] == 'finished'){
             drawnotes(result[1])
-            play(result[1])
+            $("#playbutton > span").html("Play");
+            $("#playbutton").click(function(){
+              play(result[1])
+            });
           }
         })
       }
