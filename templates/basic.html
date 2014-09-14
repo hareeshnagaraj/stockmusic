@@ -87,7 +87,7 @@
   <script src="/static/js/chartCreator.js"></script>
   <script src="/static/js/staffCreator.js"></script>
   <script>
-    var currentStock = 'GS';
+    var currentStock = 'GPRO';
     /*
     Creating a global notes object to be accessed and updated independently by Vexflow and audiosynth.js
     */
@@ -121,30 +121,24 @@
     var playButton = 0;
   </script>
   <script>
+  var availableTags = [];
+  $.get('/static/companies.txt', function(data) { //generating our list
+        //split on new lines
+        var lines = data.split('\n');
+        for(var i=0;i<lines.length;i++) {
+            availableTags.push(lines[i]);
+        }
+        console.log(availableTags)
+        //append select to page
+  });
+
+
   $(function() {
-    var availableTags = [
-      "AAPL",
-      "GOOG",
-      "COCO",
-      "MSFT",
-      "KO",
-      "CCE",
-      "JOY",
-      "JCP",
-      "MCD",
-      "NKE",
-      "GS",
-      "TWTR",
-      "FB",
-      "EBAY",
-      "ZQK",
-    ];
     $( "#tags" ).autocomplete({
       source: availableTags,
       select: function(event,ui){
-        console.log(event)
-        currentStock = $("#tags").val();
-        console.log(currentStock)
+        currentStock = $("#tags").val().toUpperCase();
+        console.log($("#tags").val().toUpperCase())
         // currentStock = currentStock.replace(/(\r\n|\n|\r)/g,"");
         $("#stockName").html("How does " + currentStock + " sound today?");
         $.ajax({
@@ -159,7 +153,7 @@
               console.log(result)
               if(result[0] == 'finished'){
                 drawnotes(result[1],true)
-                $("#playbutton > span").html("<img style='width:20px;;margin-top:20px;' src='/static/img/play_button.png' />");
+                $("#playbutton > span").html("<img style='width:60px;;margin-top:0px;' src='/static/img/play_button.png' />");
                 $("#playbutton").click(function(){
                   play(result[1])
                   console.log("clicked!")
@@ -181,10 +175,10 @@
 <body >
 <!-- Nav -->
 <ul id="gn-menu" class="gn-menu-main">
-  <li style="opacity:1;margin-left:50px;font-size:25px;"><span>stock<font style="bold">music</font></span></li>
-  <li id="playbutton" style="opacity:1;margin-left:25px;"><span><img style='width:20px;;margin-top:20px;' src='/static/img/play_button.png' /></span></li>
+  <li style="opacity:1;margin-left:50px;font-size:25px;font-weight:normal;"><span>stock<font style="bold">music</font></span></li>
+  <li id="playbutton" style="opacity:1;margin-left:16%;"><span><img style='width:60px!important;margin-top:0px;' src='/static/img/play_button.png' /></span></li>
   <li id="stockName" style="font-size:20px;margin-left:30px;font-weight: normal;"></li>
-  <li id="searchWidget" style="margin-left:50px;margin-top:0px;">
+  <li id="searchWidget" style="margin-left: 25px;margin-top:0px;">
     <div style="z-index:500;">
       <label for="tags"></label>
         <input placeholder="Search" id="tags" >
@@ -233,7 +227,7 @@
           if(result[0] == 'finished'){
             // console.log(result[1])
             drawnotes(result[1],false)
-            $("#playbutton > span").html("<img style='width:20px;;margin-top:20px;' src='/static/img/play_button.png' />");
+            $("#playbutton > span").html("<img style='width:60px;margin-top:0px;' src='/static/img/play_button.png' />");
             $("#playbutton").click(function(){
               play(result[1])
               console.log("clicked!")
@@ -245,19 +239,26 @@
   });
 
 function play(b){
+  console.log(b)
   MIDI.programChange(0, 1);
   // MIDI.programChange(1, 118);
   for (var n = 0; n < b.length; n ++) {
-    var delay =  n / 4; // play one note every quarter second
+    var delay =  n/3; // play one note every quarter second
     // var note = MIDI.pianoKeyOffset + parseInt(n); // the MIDI note
     var note = b[n]
-    var velocity = 127; // how hard the note hits
+    var velocitySetter = Math.floor((Math.random() * 10) + 1);
+    if(velocitySetter > 5){
+      var velocity = 127; // how hard the note hits
+    }
+    else{
+      var velocity = 130/n; // how hard the note hits
+    }
+
     // var velocity = 0;
     // play the note
     console.log("in play" + n+ " note " + note)
     MIDI.noteOn(1, note, velocity, delay);
     // play the some note 3-steps up
-    MIDI.noteOn(1, note + 3, velocity, delay);
   }
 }
 

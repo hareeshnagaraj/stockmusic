@@ -19,7 +19,7 @@ function chartCreator(initial,nv){
 
   // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
   chart.xAxis
-    .axisLabel("Date")
+    .axisLabel("Time")
     .tickFormat(d3.format(',.2f'));
 
   chart.yAxis
@@ -44,6 +44,7 @@ function getChartValues(data) {
 var p1 = [];
 // console.log(datumta)
 for (var i = 0; i < data.length; i++) {
+
   p1.push({x: data[i]['time'], y: data[i]['close'] }); //the nulls are to show how defined works
 }
 
@@ -51,7 +52,7 @@ for (var i = 0; i < data.length; i++) {
 return [
   {
     values: p1,
-    key: currentStock + " Stock High",
+    key: currentStock + " Stock",
     color: "#ff7f0e"
   }
 ];

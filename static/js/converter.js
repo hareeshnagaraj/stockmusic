@@ -2,8 +2,8 @@ function Converter(data,callback) {
 	var raw_data = data
 	this.notes = [];
 
-	var max = find_max(raw_data)
-	var min = find_min(raw_data)
+	var max = find_max(raw_data);
+	var min = find_min(raw_data);
 
 	for( var i = 0; i < raw_data.length; i++){
 		var next_note = (raw_data[i]['close'] - min) * 128 / (max-min);
@@ -12,9 +12,7 @@ function Converter(data,callback) {
 			callback(["finished",this.notes]);
 		}
 	}
-
 }
-
 
 
 function calculate_change(cur_item, prev_item) {
@@ -28,14 +26,14 @@ function find_min(data) {
 	if(data.length <= 0)
 		return undefined
 
-	var min = data[0]['close']
+	var min = data[0]['close'];
 	for(var i = 1; i < data.length; i++) {
 		if(data[i]['close'] < min) {
-			min = data[i]['close']
+			min = data[i]['close'];
 		}
 	}
 
-	return min
+	return min;
 }
 
 
