@@ -5,7 +5,7 @@ dataParser is the file used to parse the API response into the appropriate data 
 */
 function dataParser(initial){ //Takes in the initial data as a parameter
   this.data = initial;
-  this.JSONdata = this.data.data;;
+  this.JSONdata = this.data.data;
   this.columnNames = this.data.column_names;
   this.startDate;
   this.endDate;

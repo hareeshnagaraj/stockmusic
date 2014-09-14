@@ -6,6 +6,7 @@
   <style>
   body {
     overflow-y:scroll;
+    text-align: center;
   }
   text {
     font: 12px sans-serif;
@@ -32,6 +33,9 @@
     width:100px;
     height:50px;
     background-color: red;
+  }
+  #canvas{
+    margin:auto;
   }
   </style>
   <!-- D3 Charts include -->
@@ -68,6 +72,7 @@
   
   <!-- Chart Creation  -->
   <script src="/static/js/chartCreator.js"></script>
+  <script src="/static/js/staffCreator.js"></script>
   
   <script>
     /*
@@ -99,47 +104,7 @@
         "duration_audio":2
       },
     ];
-
-    var converter
-
-    //adding the midi player onload
-    $(window).load(function(){
-      MIDI.loadPlugin({
-        soundfontUrl: "/static/js/MIDIJS/soundfont/",
-        instruments: [ "acoustic_grand_piano"],
-        callback: function() {
-          playNotes(); 
-        }
-      });
-      $.ajax({
-        url:'/query',
-        data:{ticker:'EBAY',start_date:'2013-11-25',end_date:'2014-5-31'},
-        success:function(data){
-          console.log(data)
-          chartCreator(data,nv);
-          converter = new Converter(data)
-          console.log(converter.data)
-        },
-        dataType:'json'
-      });
-    });
-
-    /*
-    Function to play files from external MIDI file  
-    */
-    function playNotes(){
-      MIDI.programChange(0, 0);
-      MIDI.programChange(1, 118);
-      for (var n = 0; n < 100; n ++) {
-        var delay = n / 4; // play one note every quarter second
-        var note = MIDI.pianoKeyOffset + n; // the MIDI note
-        var velocity = 127; // how hard the note hits
-        // play the note
-        MIDI.noteOn(0, note, velocity, delay);
-        // play the some note 3-steps up
-        MIDI.noteOn(1, note + 3, velocity, delay);
-      }
-    }
+    var converter;
   </script>
 </head>
 <body >
@@ -149,46 +114,34 @@
 </div>
 <div class="one">
   <div class="a">
-    <canvas id="canvas" width="700" height="100"></canvas>
+    <!-- <canvas id="canvas" width="1080" height="1000"></canvas> -->
   </div>
 </div>
 <script> //vexflow script for display of musical stuff
-  var canvas = $(".one .a canvas")[0];
-  var renderer = new Vex.Flow.Renderer(canvas,
-    Vex.Flow.Renderer.Backends.CANVAS);
 
-  var ctx = renderer.getContext();
-  var stave = new Vex.Flow.Stave(10, 0, 500);
-  stave.addClef("treble").setContext(ctx).draw();
-  // Create the notes
-  var vexNotes = [
-    // A quarter-note C.
-    new Vex.Flow.StaveNote({ keys: ["C/4"], duration: "q" }),
-    // A quarter-note D.
-    new Vex.Flow.StaveNote({ keys: ["D/4"], duration: "q" }),
-    // A quarter-note rest. Note that the key (b/4) specifies the vertical
-    // position of the rest.
-    new Vex.Flow.StaveNote({ keys: ["B/4"], duration: "qr" }),
-    // A C-Major chord.
-    new Vex.Flow.StaveNote({ keys: [ "E/4", "g/4"], duration: "q" })
-  ];
-  // Create a voice in 4/4
-  var voice = new Vex.Flow.Voice({
-    num_beats: 4,
-    beat_value: 4,
-    resolution: Vex.Flow.RESOLUTION
-  });
 
-  // Add notes to voice
-  voice.addTickables(vexNotes);
-
-  // Format and justify the notes to 500 pixels
-  var formatter = new Vex.Flow.Formatter().
-    joinVoices([voice]).format([voice], 500);
-
-  // Render voice
-  voice.draw(ctx, stave);
 </script>
+<script>
+  var that;
+  $(document).ready(function(){
+    MIDI.loadPlugin({
+      soundfontUrl: "/static/js/MIDIJS/soundfont/",
+      instruments: [ "acoustic_grand_piano"],
+      callback: function() {
+        // playNotes(); 
+        chartCreator(testdata,nv);
+        converter = new Converter(testdata.data,function(result){
+          if(result[0] == 'finished'){
+            drawnotes(result[1])
+            play(result[1])
+          }
+        })
+      }
+    });
+  });
+</script>
+
+
 <div class="tempButton"></div>
 </body>
 </html>

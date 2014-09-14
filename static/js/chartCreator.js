@@ -3,7 +3,6 @@
   This class is designed to load the chart displayed by nvd3js in the main page. The slope of this chart is then used to determine musical composition
 
 */
-
 function chartCreator(initial,nv){
   this.data = initial;
   var chart;
@@ -19,7 +18,7 @@ function chartCreator(initial,nv){
 
   // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
   chart.xAxis
-    .axisLabel("Time (s)")
+    .axisLabel("Date")
     .tickFormat(d3.format(',.2f'));
 
   chart.yAxis
@@ -44,7 +43,7 @@ function getChartValues(data) {
 var p1 = [];
 var parser = new dataParser(data);
 var results = parser.getValuesFor('High');
-console.log(results);
+// console.log(results);
 
 for (var i = 0; i < results.length; i++) {
   p1.push({x: results[i][0], y: results[i][1] }); //the nulls are to show how defined works
