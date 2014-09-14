@@ -157,10 +157,10 @@ def get_prices(args=None):
     # endDateTime = 2014-09-12T21:30:00.000
 
     startTime = datetime.datetime.combine(tradedOn, datetime.time(13, 30))
-    request.set("startDateTime", datetime.datetime(2014, 9, 12, 11, 0, 0))
+    request.set("startDateTime", datetime.datetime(2014, 9, 10, 11, 0, 0))
 
     endTime = datetime.datetime.combine(tradedOn, datetime.time(21, 30))
-    request.set("endDateTime", datetime.datetime(2014, 9, 12, 18, 00, 0))
+    request.set("endDateTime", datetime.datetime(2014, 9, 15, 18, 00, 0))
 
     # startTime = datetime.datetime.strptime("%Y-%m-%d", options.startDateTime)
     # endTime = datetime.datetime.strptime("%Y-%m-%d", options.endDateTime)
@@ -192,12 +192,15 @@ def get_prices(args=None):
 
     result = []
     for element in data_set[3].getElement(BAR_DATA).getElement(BAR_TICK_DATA).values():
-      result.append({"time": str(element.getElementAsDatetime(TIME)), 
-                     "close": element.getElementAsFloat(CLOSE)})
-      # result.append({"close": element.getElementAsFloat(CLOSE)})
+      result.append({"time": element.getElementAsDatetime(TIME), 
+                     "close": element.getElementAsFloat(CLOSE),
+                     "open": element.getElementAsFloat(OPEN),
+                     "high": element.getElementAsFloat(HIGH),
+                     "low": element.getElementAsFloat(LOW),
+                     "numEvents": element.getElementAsInteger(NUM_EVENTS),
+                     "volume": element.getElementAsInteger(VOLUME)})
 
     return result
-    # print res
 
 if __name__ == "__main__":
     print "SimpleIntradayTickExample"
