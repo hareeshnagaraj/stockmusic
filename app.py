@@ -14,9 +14,11 @@ import flask
 import requests
 import sys
 from flask import render_template
+import getprices
+import json
+import datetime
 
 app = Flask(__name__)
-
 
 try:
 
@@ -31,6 +33,25 @@ except IOError as e:
     print "error: file 'token.txt' not found"
     sys.exit(1)
 
+
+"""
+Sublclasses JSONEncoder in order to implement 
+date json serialization
+"""
+class DateTimeEncoder(json.JSONEncoder):
+
+  def default(self, obj):
+    """
+    returns serialized string representation of obj
+    """
+    # if obj is a date object, return the isoformat string
+    if isinstance(obj, datetime.date):
+      return obj.isoformat()
+
+    # else call regular JSONEncoder method to serialize obj
+    return json.JSONEncoder.default(self, obj)
+
+
 @app.route("/")
 def home():
     return render_template('basic.html')
@@ -38,9 +59,14 @@ def home():
 # query quandl api for stock market data and return results as json
 @app.route("/query")
 def get_data():
-    resp = requests.get(build_query_string(flask.request.args))
-    resp.raise_for_status()
-    return flask.jsonify(resp.json()), 200
+    # resp = requests.get(build_query_string(flask.request.args))
+    # resp.raise_for_status()
+
+    data = getprices.get_prices(['--ip', '10.8.8.1',
+                                 '-s', flask.request.args.get('ticker', '')])
+
+    return flask.Response(json.dumps(data, cls=DateTimeEncoder), mimetype="application/json")
+
 
 # generate string used to query quandl api
 def build_query_string(args):
